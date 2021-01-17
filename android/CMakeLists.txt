@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.4.1)
 
 set (CMAKE_VERBOSE_MAKEFILE ON)
-set (CMAKE_CXX_STANDARD 11)
 
 add_library(traceroute
             SHARED
@@ -25,7 +24,6 @@ add_library(traceroute
 
 # Specifies a path to native header files.
 include_directories(
-            ../cpp
             ../cpp/traceroute-2.1.0/include
             ../cpp/traceroute-2.1.0/libsupp
             ../cpp/traceroute-2.1.0/traceroute
