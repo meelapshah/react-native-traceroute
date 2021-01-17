@@ -8,7 +8,13 @@ export default function App() {
   const [result, setResult] = React.useState<number | undefined>();
 
   React.useEffect(() => {
-    Traceroute.doTraceroute(["hi", "there"]).then(setResult);
+    Traceroute.doTraceroute([
+      'traceroute',
+      '-4',
+      '--udp',
+      '--port=50000',
+      '8.8.8.8',
+    ]).then(setResult);
   }, []);
 
   return (
