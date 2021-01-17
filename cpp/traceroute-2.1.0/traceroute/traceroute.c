@@ -605,7 +605,7 @@ static CLIF_argument arg_list[] = {
 
 static void do_it (void);
 
-int main (int argc, char *argv[]) {
+int runmain (int argc, char *argv[]) {
 
 	setlocale (LC_ALL, "");
 	setlocale (LC_NUMERIC, "C");	/*  avoid commas in msec printed  */

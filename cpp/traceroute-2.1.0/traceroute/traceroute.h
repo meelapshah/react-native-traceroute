@@ -105,3 +105,4 @@ static void __init_ ## MOD (void) {	\
 	tr_register_module (&MOD);	\
 }
 
+int runmain(int argc, char **argv);
