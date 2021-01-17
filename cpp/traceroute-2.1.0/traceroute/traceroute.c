@@ -25,7 +25,7 @@
 #include <linux/errqueue.h>
 
 /*  XXX: Remove this when things will be defined properly in netinet/ ...  */
-#include "flowlabel.h"
+// #include "flowlabel.h"
 
 #include <clif.h>
 #include "version.h"
