@@ -20,8 +20,7 @@ add_library(traceroute
             ../cpp/traceroute-2.1.0/traceroute/mod-tcpconn.c
             ../cpp/traceroute-2.1.0/traceroute/module.c
             ../cpp/traceroute-2.1.0/libsupp/clif.c
-            ../cpp/example.cpp
-            cpp-adapter.cpp
+            traceroute-jni.c
 )
 
 # Specifies a path to native header files.
@@ -31,3 +30,5 @@ include_directories(
             ../cpp/traceroute-2.1.0/libsupp
             ../cpp/traceroute-2.1.0/traceroute
 )
+
+target_link_libraries(traceroute PRIVATE log)

@@ -8,7 +8,7 @@ export default function App() {
   const [result, setResult] = React.useState<number | undefined>();
 
   React.useEffect(() => {
-    Traceroute.multiply(3, 7).then(setResult);
+    Traceroute.doTraceroute(["hi", "there"]).then(setResult);
   }, []);
 
   return (
