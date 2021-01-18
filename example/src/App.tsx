@@ -16,8 +16,8 @@ export default function App() {
       const id = await Traceroute.doTraceroute([
         'traceroute',
         '-4',
-        '--udp',
-        '--port=50000',
+        /* '--udp',
+         * '--port=50000', */
         '8.8.8.8',
       ]);
       setTracerouteId(id);
