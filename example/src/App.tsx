@@ -1,25 +1,43 @@
 import * as React from 'react';
 
-import { StyleSheet, View, Text } from 'react-native';
+import { NativeEventEmitter, NativeModules, StyleSheet, View, Text } from 'react-native';
 import Traceroute from 'react-native-traceroute';
 
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
+  const [tracerouteId, setTracerouteId] = React.useState<number | undefined>();
+  const [stdout, setStdout] = React.useState<string>("");
+  const [stderr, setStderr] = React.useState<string>("");
+  const [exitcode, setExitcode] = React.useState<number | undefined>();
+
 
   React.useEffect(() => {
-    Traceroute.doTraceroute([
-      'traceroute',
-      '-4',
-      '--udp',
-      '--port=50000',
-      '8.8.8.8',
-    ]).then(setResult);
+    const f = async () => {
+      const id = await Traceroute.doTraceroute([
+        'traceroute',
+        '-4',
+        '--udp',
+        '--port=50000',
+        '8.8.8.8',
+      ]);
+      setTracerouteId(id);
+      const ee = new NativeEventEmitter(NativeModules.TracerouteModule);
+      ee.addListener(id, (evt) => {
+        setStdout(evt.stdout);
+        setStderr(evt.stderr);
+        setExitcode(evt.exitcode);
+      });
+    }
+    f();
   }, []);
-
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
+      <Text>Id: {tracerouteId}</Text>
+      <Text>Stdout</Text>
+      <Text>{stdout}</Text>
+      <Text>Stderr</Text>
+      <Text>{stderr}</Text>
+      <Text>Exitcode: {exitcode}</Text>
     </View>
   );
 }
