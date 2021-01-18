@@ -1,9 +1,25 @@
-import { NativeModules } from 'react-native';
+import { NativeEventEmitter, NativeModules } from 'react-native';
 
-type TracerouteType = {
-  multiply(a: number, b: number): Promise<number>;
-};
+export interface TracerouteResult {
+  stdout: string;
+  stderr: string;
+  exitcode?: number;
+}
 
-const { Traceroute } = NativeModules;
+const TracerouteEventEmitter = new NativeEventEmitter(NativeModules.Traceroute);
 
-export default Traceroute as TracerouteType;
+export function Traceroute(
+  cliArgs: string[],
+  onUpdate: (result: TracerouteResult) => void
+) {
+  NativeModules.Traceroute.doTraceroute(cliArgs).then((id: string) => {
+    TracerouteEventEmitter.addListener(id, (evt: TracerouteResult) => {
+      onUpdate(evt);
+      if (evt.exitcode !== undefined) {
+        TracerouteEventEmitter.removeListener(id);
+      }
+    });
+  });
+}
+
+export default Traceroute;
