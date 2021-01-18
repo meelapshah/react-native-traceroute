@@ -1,7 +1,11 @@
 #include <jni.h>
+
 #include <android/log.h>
-#include <string.h>
+#include <errno.h>
+#include <malloc.h>
+#include <pthread.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "traceroute.h"
 
@@ -10,7 +14,70 @@
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__);
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__);
 
+#define JNI_VERSION JNI_VERSION_1_6
 #define MAX_LINE_LENGTH 1024
+
+static pthread_mutex_t trace_active;
+static int trace_return = 0;
+
+static JavaVM *jvm;
+static jobject respRef;
+
+jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+    jvm = vm;
+    pthread_mutex_init(&trace_active, NULL);
+    return JNI_VERSION;
+}
+
+void JNI_OnUnload(JavaVM *vm, void *reserved) {
+    pthread_mutex_destroy(&trace_active);
+}
+
+JNIEnv *getJNIEnv() {
+    JNIEnv *env = NULL;
+    if ((*jvm)->GetEnv(jvm, &env, JNI_VERSION) != JNI_OK) {
+        LOGE("GetEnv error %p", env);
+        return NULL;
+    }
+    return env;
+}
+
+void append_stdout(const char *s) {
+    JNIEnv *env = getJNIEnv();
+    jclass respCls = (*env)->GetObjectClass(env, respRef);
+    jmethodID appendStdout = (*env)->GetMethodID(env, respCls, "appendStdout", "(Ljava/lang/String;)V");
+    if (appendStdout == NULL) {
+        LOGE("no method appendStdout(String)");
+        return;
+    }
+    jstring js = (*env)->NewStringUTF(env, s);
+    (*env)->CallVoidMethod(env, respRef, appendStdout, js);
+    (*env)->DeleteLocalRef(env, js);
+}
+
+void append_stderr(const char *s) {
+    JNIEnv *env = getJNIEnv();
+    jclass respCls = (*env)->GetObjectClass(env, respRef);
+    jmethodID appendStderr = (*env)->GetMethodID(env, respCls, "appendStderr", "(Ljava/lang/String;)V");
+    if (appendStderr == NULL) {
+        LOGE("no method appendStderr(String)");
+        return;
+    }
+    jstring js = (*env)->NewStringUTF(env, s);
+    (*env)->CallVoidMethod(env, respRef, appendStderr, js);
+    (*env)->DeleteLocalRef(env, js);
+}
+
+void set_exit_code(int code) {
+    JNIEnv *env = getJNIEnv();
+    jclass respCls = (*env)->GetObjectClass(env, respRef);
+    jmethodID setExitCode = (*env)->GetMethodID(env, respCls, "setExitCode", "(I)V");
+    if (setExitCode == NULL) {
+        LOGE("no method setExitCode()");
+        return;
+    }
+    (*env)->CallVoidMethod(env, respRef, setExitCode, code);
+}
 
 int printf(const char *fmt, ...) {
     va_list ap;
@@ -22,7 +89,8 @@ int printf(const char *fmt, ...) {
 
     va_end(ap);
 
-    LOGE("printf(%s)", buffer);
+    /* LOGE("printf(%s)", buffer); */
+    append_stdout(buffer);
 
     free(buffer);
     return 1;
@@ -37,7 +105,8 @@ int fprintf(FILE *fp, const char *fmt, ...) {
     buffer[c] = '\0';
     va_end(ap);
 
-    LOGE("fprintf(%s)", buffer);
+    /* LOGE("fprintf(%s)", buffer); */
+    append_stderr(buffer);
 
     free(buffer);
     return 1;
@@ -48,7 +117,8 @@ int vfprintf(FILE *fp, const char *fmt, va_list args) {
     int c = vsnprintf(buffer, MAX_LINE_LENGTH, fmt, args);
     buffer[c] = '\0';
 
-    LOGE("traceroute error message(vfprintf): %s", buffer);
+    /* LOGE("traceroute error message(vfprintf): %s", buffer); */
+    append_stderr(buffer);
 
     free(buffer);
     return 1;
@@ -56,10 +126,14 @@ int vfprintf(FILE *fp, const char *fmt, va_list args) {
 
 void perror(const char *msg) {
     LOGE("traceroute error message(perror): %s", msg);
+    append_stderr(msg);
 }
 
 void exit(int status) {
     LOGE("traceroute error to exit program, status:%d", status);
+    set_exit_code(0);
+}
+
 struct doTracerouteArgs {
     int argc;
     char **argv;
@@ -77,6 +151,7 @@ void *doTraceroute(void *arg) {
     char **argv = a->argv;
 
     trace_return = runmain(argc, argv);
+    set_exit_code(trace_return);
 
     (*jvm)->DetachCurrentThread(jvm);
     return NULL;
