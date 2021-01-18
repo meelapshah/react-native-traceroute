@@ -15,10 +15,6 @@ class TracerouteResponse(val eventName: String, val reactContext: ReactApplicati
     var stdout = StringBuilder()
     var stderr = StringBuilder()
     var exitCode: Int? = null
-        set(value) {
-            exitCode = value
-            emitUpdate()
-        }
 
     fun appendStdout(s: String) {
         stdout.append(s)
@@ -27,6 +23,11 @@ class TracerouteResponse(val eventName: String, val reactContext: ReactApplicati
 
     fun appendStderr(s: String) {
         stderr.append(s)
+        emitUpdate()
+    }
+
+    fun setExitcode(c: Int) {
+        exitCode = c
         emitUpdate()
     }
 

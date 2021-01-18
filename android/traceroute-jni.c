@@ -71,7 +71,7 @@ void append_stderr(const char *s) {
 void set_exit_code(int code) {
     JNIEnv *env = getJNIEnv();
     jclass respCls = (*env)->GetObjectClass(env, respRef);
-    jmethodID setExitCode = (*env)->GetMethodID(env, respCls, "setExitCode", "(I)V");
+    jmethodID setExitCode = (*env)->GetMethodID(env, respCls, "setExitcode", "(I)V");
     if (setExitCode == NULL) {
         LOGE("no method setExitCode()");
         return;
