@@ -132,6 +132,8 @@ void perror(const char *msg) {
 void exit(int status) {
     LOGE("traceroute error to exit program, status:%d", status);
     set_exit_code(0);
+    (*jvm)->DetachCurrentThread(jvm);
+    pthread_exit(0);
 }
 
 struct doTracerouteArgs {
