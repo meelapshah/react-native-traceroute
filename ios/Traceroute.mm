@@ -4,15 +4,9 @@
 
 RCT_EXPORT_MODULE()
 
-// Example method for C++
-// See the implementation of the example module in the `cpp` folder
-RCT_EXPORT_METHOD(multiply:(nonnull NSNumber*)a withB:(nonnull NSNumber*)b
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withReject:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(doTraceroute:(NSArray*)cliArgs:(RCTPromiseResolveBlock)resolve:(RCTPromiseRejectBlock)reject)
 {
-    NSNumber *result = @(example::multiply([a floatValue], [b floatValue]));
-
-    resolve(result);
+    reject(@"not_supported", @"traceroute on ios not currently implemented", nil);
 }
 
 @end
