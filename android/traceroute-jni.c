@@ -35,7 +35,7 @@ void JNI_OnUnload(JavaVM *vm, void *reserved) {
 
 JNIEnv *getJNIEnv() {
     JNIEnv *env = NULL;
-    if ((*jvm)->GetEnv(jvm, &env, JNI_VERSION) != JNI_OK) {
+    if ((*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION) != JNI_OK) {
         LOGE("GetEnv error %p", env);
         return NULL;
     }
@@ -173,7 +173,7 @@ Java_com_reactnativetraceroute_TracerouteModule_nativeTraceroute(JNIEnv *env, jc
     for (int i = 0; i < argc; i++) {
         jargv[i] = (jstring) ((*env)->GetObjectArrayElement(env, jarray, i));
         argv[i] = (char *) ((*env)->GetStringUTFChars(env, jargv[i], 0));
-        LOGE("argv[%d] (len %d) = %s", i, strlen(argv[i]), argv[i]);
+        LOGE("argv[%d] (len %zu) = %s", i, strlen(argv[i]), argv[i]);
     }
 
     respRef = (*env)->NewGlobalRef(env, resp);
@@ -187,7 +187,7 @@ Java_com_reactnativetraceroute_TracerouteModule_nativeTraceroute(JNIEnv *env, jc
     pthread_join(tid, NULL);
 
     for (int i = 0; i < argc; i++) {
-        (*env)->ReleaseStringUTFChars(env, jargv[i], (const jchar *) argv[i]);
+        (*env)->ReleaseStringUTFChars(env, jargv[i], argv[i]);
     }
 
     (*env)->DeleteGlobalRef(env, respRef);

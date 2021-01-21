@@ -6,6 +6,7 @@
     See COPYING for the status of this software.
 */
 
+#include <string.h>
 #include <netinet/in.h>
 
 #include <clif.h>
