@@ -1,8 +1,6 @@
 #import <React/RCTBridgeModule.h>
 
-#ifdef __cplusplus
-
-#endif
+#include "apple-traceroute.h"
 
 @interface Traceroute : NSObject <RCTBridgeModule>
 

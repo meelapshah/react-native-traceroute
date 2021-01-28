@@ -238,6 +238,8 @@ static char sccsid[] = "@(#)traceroute.c	8.1 (Berkeley) 6/6/93";
  *     Tue Dec 20 03:50:13 PST 1988
  */
 
+#include "apple-traceroute.h"
+
 #include <sys/param.h>
 #include <sys/time.h>
 #include <sys/socket.h>
@@ -320,9 +322,7 @@ int waittime = 5;		/* time to wait for response (in seconds) */
 int nflag;			/* print addresses numerically */
 
 int
-runmain(argc, argv)
-	int argc;
-	char *argv[];
+runtraceroute(int argc, char *argv[])
 {
 	extern char *optarg;
 	extern int optind;

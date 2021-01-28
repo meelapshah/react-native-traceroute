@@ -7,10 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-
-		5E46D8CD2428F78900513E24 /* example.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E46D8CB2428F78900513E24 /* example.cpp */; };
+		5B951CE125C35A7200B651FE /* apple-traceroute.c in Sources */ = {isa = PBXBuildFile; fileRef = 5B951CE025C35A7200B651FE /* apple-traceroute.c */; };
 		5E555C0D2413F4C50049A1A2 /* Traceroute.mm in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* Traceroute.mm */; };
-
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,11 +25,10 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libTraceroute.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libTraceroute.a; sourceTree = BUILT_PRODUCTS_DIR; };
-
-		5E46D8CB2428F78900513E24 /* example.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = example.cpp; path = ../cpp/example.cpp; sourceTree = "<group>"; };
-		5E46D8CC2428F78900513E24 /* example.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = example.h; path = ../cpp/example.h; sourceTree = "<group>"; };
+		5B951CDF25C35A7200B651FE /* apple-traceroute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "apple-traceroute.h"; sourceTree = "<group>"; };
+		5B951CE025C35A7200B651FE /* apple-traceroute.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "apple-traceroute.c"; sourceTree = "<group>"; };
+		5B951CE325C35B1400B651FE /* Traceroute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Traceroute.h; sourceTree = "<group>"; };
 		B3E7B5891CC2AC0600A0062D /* Traceroute.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Traceroute.mm; sourceTree = "<group>"; };
-
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,11 +53,10 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-
-				5E46D8CB2428F78900513E24 /* example.cpp */,
-				5E46D8CC2428F78900513E24 /* example.h */,
 				B3E7B5891CC2AC0600A0062D /* Traceroute.mm */,
-
+				5B951CE325C35B1400B651FE /* Traceroute.h */,
+				5B951CE025C35A7200B651FE /* apple-traceroute.c */,
+				5B951CDF25C35A7200B651FE /* apple-traceroute.h */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -122,10 +118,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-
-				5E46D8CD2428F78900513E24 /* example.cpp in Sources */,
+				5B951CE125C35A7200B651FE /* apple-traceroute.c in Sources */,
 				5E555C0D2413F4C50049A1A2 /* Traceroute.mm in Sources */,
-
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -238,11 +232,9 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Traceroute;
 				SKIP_INSTALL = YES;
-
 				SWIFT_OBJC_BRIDGING_HEADER = "Traceroute-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-
 			};
 			name = Debug;
 		};
@@ -259,10 +251,8 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = Traceroute;
 				SKIP_INSTALL = YES;
-
 				SWIFT_OBJC_BRIDGING_HEADER = "Traceroute-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-
 			};
 			name = Release;
 		};
