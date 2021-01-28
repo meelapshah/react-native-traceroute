@@ -13,12 +13,13 @@ export function Traceroute(
   onUpdate: (result: TracerouteResult) => void
 ) {
   NativeModules.Traceroute.doTraceroute(cliArgs).then((id: string) => {
-    TracerouteEventEmitter.addListener(id, (evt: TracerouteResult) => {
+    const listener = (evt: TracerouteResult) => {
       onUpdate(evt);
       if (evt.exitcode !== undefined) {
-        TracerouteEventEmitter.removeListener(id);
+        TracerouteEventEmitter.removeListener(id, listener);
       }
-    });
+    };
+    TracerouteEventEmitter.addListener(id, listener);
   });
 }
 
