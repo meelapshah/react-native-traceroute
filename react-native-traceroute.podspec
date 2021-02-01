@@ -18,5 +18,5 @@ Pod::Spec.new do |s|
 
 
   s.dependency "React-Core"
-  s.dependency "PhoneNetSDK"
+  s.dependency "PhoneNetSDK", :path => './net-diagnosis'
 end
