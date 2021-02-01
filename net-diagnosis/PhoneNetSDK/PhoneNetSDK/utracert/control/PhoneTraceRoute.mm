@@ -166,6 +166,7 @@ typedef enum PNetRecTracertIcmpType{
         }
 
         [self.delegate tracerouteWithUCTraceRoute: self tracertResult: record];
+        free(packet);
     } while (++ttl <= kTracertMaxTTL && (rec == PNetRecTracertIcmpType_routeReceive || rec == PNetRecTracertIcmpType_noReply) && !self.isStopTracert);
 
     if (rec == PNetRecTracertIcmpType_Dest) {
