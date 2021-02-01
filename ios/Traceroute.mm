@@ -1,22 +1,37 @@
 #import "Traceroute.h"
+#import <PhoneNetSDK/PhoneNetSDK.h>
+#import <stdlib.h>
 
-@implementation Traceroute
+@implementation TracerouteModule
 
 RCT_EXPORT_MODULE()
 
-RCT_EXPORT_METHOD(doTraceroute:(NSArray*)cliArgs:(RCTPromiseResolveBlock)resolve:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(doTraceroute:(NSString*)address:(NSString*)probeType:(RCTPromiseResolveBlock)resolve:(RCTPromiseRejectBlock)reject)
 {
-    NSString *s = @"traceroute";
-    NSString *t = @"8.8.8.8";
-    char *argv[2];
-    argv[0] = (char *)calloc([s length]+1, 1);
-    strncpy(argv[0], [s UTF8String], [s length]);
-    argv[1] = (char *)calloc([t length]+1, 1);
-    strncpy(argv[1], [t UTF8String], [t length]);
-    runtraceroute(2, argv);
-    free(argv[0]);
-    free(argv[1]);
-    reject(@"not_supported", @"traceroute on ios not currently implemented", nil);
+    NSString *tracerouteId = [NSString stringWithFormat:@"traceroute%d",arc4random_uniform(99999)];
+    NSLog(@"traceroute id: %s", tracerouteId);
+    resolve(tracerouteId);
+    if ([probeType isEqualToString:@"udp"]) {
+      [PNUdpTraceroute start:address complete:^(NSMutableString *res) {
+        [self sendEventWithName:tracerouteId
+              body:@{
+                @"stdout": res,
+                @"stderr": @"",
+                @"exitcode": @0
+              }];
+      }];
+      return;
+    }
+
+    [[PhoneNetManager shareInstance] netStartTraceroute:address tracerouteResultHandler:^(NSString * _Nullable res, NSString * _Nullable destIp) {
+      [self sendEventWithName:tracerouteId
+        body:@{
+          @"stdout": res,
+          @"stderr": @"",
+          @"exitcode": @0
+      }];
+    }];
+    // reject(@"not_supported", @"traceroute on ios not currently implemented", nil);
 }
 
 @end

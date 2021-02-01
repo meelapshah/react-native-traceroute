@@ -1,7 +1,6 @@
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 
-#include "apple-traceroute.h"
-
-@interface Traceroute : NSObject <RCTBridgeModule>
+@interface TracerouteModule : RCTEventEmitter <RCTBridgeModule>
 
 @end
