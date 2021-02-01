@@ -86,13 +86,17 @@ static PhoneNetManager *sdkManager_instance = nil;
 }
 
 
-- (void)netStartTraceroute:(NSString *_Nonnull)host tracerouteResultHandler:(NetTracerouteResultHandler _Nonnull)handler
+- (void)netStartTraceroute:(NSString *_Nonnull)host tracerouteResultHandler:(NetTracerouteResultHandler _Nonnull)handler tracerouteCompleteHandler:(NetTracerouteCompleteHandler _Nonnull)completeHandler
 {
     if (!handler) {
         @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"no tracerouteResultHandler" userInfo:nil];
         return;
     }
-    [[PhoneTraceRouteService shareInstance] startTracerouteHost:host resultHandler:handler];
+    if (!completeHandler) {
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"no tracerouteCompleteHandler" userInfo:nil];
+        return;
+    }
+    [[PhoneTraceRouteService shareInstance] startTracerouteHost:host resultHandler:handler completeHandler:completeHandler];
 }
 
 - (void)netStopTraceroute
@@ -163,8 +167,8 @@ static PhoneNetManager *sdkManager_instance = nil;
             [self netGetDevicePublicIpInfo];
         }
             break;
-            
-            
+
+
         default:
             break;
     }
@@ -178,7 +182,7 @@ static PhoneNetManager *sdkManager_instance = nil;
             log4cplus_warn("PhoneNetSDK", "get public ip error , content is nil..");
         }else{
             PIpInfoModel *ipModel = [PIpInfoModel uIpInfoModelWithDict:dict];
-           
+
             self.devicePublicIpInfo = ipModel;
         }
     }];

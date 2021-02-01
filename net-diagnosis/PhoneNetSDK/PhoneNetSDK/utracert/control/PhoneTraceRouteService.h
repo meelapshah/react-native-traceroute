@@ -23,7 +23,7 @@
  @param host ip or doman
  @param handler traceroute results
  */
-- (void)startTracerouteHost:(NSString *)host resultHandler:(NetTracerouteResultHandler)handler;
+- (void)startTracerouteHost:(NSString *)host resultHandler:(NetTracerouteResultHandler)handler completeHandler:(NetTracerouteCompleteHandler)completeHandler;
 
 - (void)uStopTracert;
 - (BOOL)uIsTracert;

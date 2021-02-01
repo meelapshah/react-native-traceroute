@@ -8,6 +8,10 @@ traceroute
 npm install react-native-traceroute
 ```
 
+For ios, add to Podfile
+```
+pod "PhoneNetSDK", :path => 'node_modules/react-native-traceroute/net-diagnosis'
+```
 ## Usage
 
 ```js
@@ -15,13 +19,12 @@ import Traceroute from "react-native-traceroute";
 
 // ...
 
-Traceroute(["traceroute", "-4", "8.8.8.8"], (evt: TracerouteResult) => {
-  // This callback is invoked whenever traceroute prints something.
-  // So it will be called many times with updated values.
-  // When exitcode is not undefined, we are done.
-  console.log(evt.stdout);
-  console.log(evt.stderr);
-  console.log(evt.exitcode);
+try {
+  await Traceroute("8.8.8.8", "icmp", (result: TracerouteResult) => {
+    // use result.output and result.done
+  });
+} catch (e) {
+  // ...
 }
 ```
 

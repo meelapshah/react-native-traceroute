@@ -5,28 +5,25 @@ import Traceroute, {TracerouteResult} from 'react-native-traceroute';
 
 
 export default function App() {
-  const [stdout, setStdout] = React.useState<string>("");
-  const [stderr, setStderr] = React.useState<string>("");
-  const [exitcode, setExitcode] = React.useState<number | undefined>();
+  const [output, setOutput] = React.useState<number | undefined>();
 
 
   React.useEffect(() => {
-    Traceroute(
-    '8.8.8.8',
-    'icmp',
-    (evt: TracerouteResult) => {
-    setStdout(evt.stdout);
-    setStderr(evt.stderr);
-    setExitcode(evt.exitcode);
-    });
+    console.log("starting traceroute");
+    (async () => {
+        try {
+          await Traceroute("8.8.8.8", "icmp", (res: TracerouteResult) => {
+            setOutput(res.output);
+          });
+        } catch (e) {
+            console.error(`traceroute rejected: ${e}`);
+        }
+    })()
   }, []);
   return (
     <View style={styles.container}>
-      <Text>Stdout</Text>
-      <Text>{stdout}</Text>
-      <Text>Stderr</Text>
-      <Text>{stderr}</Text>
-      <Text>Exitcode: {exitcode}</Text>
+      <Text>Output</Text>
+      <Text>{output}</Text>
     </View>
   );
 }

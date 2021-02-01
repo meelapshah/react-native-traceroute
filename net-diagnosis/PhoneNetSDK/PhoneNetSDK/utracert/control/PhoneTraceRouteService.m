@@ -11,6 +11,7 @@
 @interface PhoneTraceRouteService()<PhoneTraceRouteDelegate>
 @property (nonatomic,strong) PhoneTraceRoute *ucTraceroute;
 @property (nonatomic,copy,readonly) NetTracerouteResultHandler tracertResultHandler;
+@property (nonatomic,copy,readonly) NetTracerouteCompleteHandler tracertCompleteHandler;
 @end
 
 @implementation PhoneTraceRouteService
@@ -21,7 +22,7 @@ static PhoneTraceRouteService *ucTraceRouteService_instance = NULL;
 {
     self = [super init];
     if (self) {
-        
+
     }
     return self;
 }
@@ -44,12 +45,13 @@ static PhoneTraceRouteService *ucTraceRouteService_instance = NULL;
     return [self.ucTraceroute isTracert];
 }
 
-- (void)startTracerouteHost:(NSString *)host resultHandler:(NetTracerouteResultHandler)handler
+- (void)startTracerouteHost:(NSString *)host resultHandler:(NetTracerouteResultHandler)handler completeHandler:(NetTracerouteCompleteHandler)completeHandler
 {
     if (_ucTraceroute) {
         _ucTraceroute = nil;
     }
     _tracertResultHandler = handler;
+    _tracertCompleteHandler = completeHandler;
     _ucTraceroute = [[PhoneTraceRoute alloc] init];
     _ucTraceroute.delegate = self;
     [_ucTraceroute startTracerouteHost:host];
@@ -73,16 +75,16 @@ static PhoneTraceRouteService *ucTraceRouteService_instance = NULL;
         _tracertResultHandler(tracertDetail,tracertRes.dstIp);
         return;
     }
-    
+
     NSString *tracertNormalDetail = [NSString stringWithFormat:@"%d  %@(%@) %@",(int)tracertRes.hop,tracertRes.ip,tracertRes.ip,mutableDurations];
     [tracertDetail appendString:tracertNormalDetail];
     _tracertResultHandler(tracertDetail,tracertRes.dstIp);
-    
+
 }
 
 - (void)tracerouteFinishedWithUCTraceRoute:(PhoneTraceRoute *)ucTraceRoute
 {
-    
+  _tracertCompleteHandler();
 }
 
 @end

@@ -11,7 +11,9 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.WritableMap
 
-class TracerouteResponse(val eventName: String, val reactContext: ReactApplicationContext) {
+import java.util.concurrent.atomic.AtomicBoolean
+
+class TracerouteResponse(val reactContext: ReactApplicationContext) {
     var stdout = StringBuilder()
     var stderr = StringBuilder()
     var exitCode: Int? = null
@@ -28,15 +30,21 @@ class TracerouteResponse(val eventName: String, val reactContext: ReactApplicati
 
     fun setExitcode(c: Int) {
         exitCode = c
+        TracerouteModule.inProgress.set(false);
         emitUpdate()
     }
 
     fun emitUpdate() {
         val params: WritableMap = Arguments.createMap()
-        params.putString("stdout", stdout.toString())
-        params.putString("stderr", stderr.toString())
-        params.putString("exitcode", exitCode?.toString())
-        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java).emit(eventName, params)
+        var output: String = stdout.toString()
+        if (stderr.length > 0) {
+          output += "\nerror:\n" + stderr.toString()
+        }
+        params.putString("output", output)
+        params.putBoolean("done", if (exitCode == null) false else true)
+        reactContext.getJSModule(
+          DeviceEventManagerModule.RCTDeviceEventEmitter::class.java
+          ).emit(TracerouteModule.updateEvent, params)
     }
 }
 
@@ -47,25 +55,20 @@ class TracerouteModule(val reactContext: ReactApplicationContext) : ReactContext
 
     @ReactMethod
     fun doTraceroute(address: String, probeType: String, promise: Promise) {
+        if (!TracerouteModule.inProgress.compareAndSet(false, true)) {
+            promise.reject("EINPROGRESS", "Traceroute in progress.")
+            return
+        }
         val cliArgs = arrayOf<String>("traceroute", "-I", address)
         if (probeType == "udp") {
           cliArgs[1] = "-U"
         }
         Log.d(TracerouteModule.TAG, "doTraceroute " + cliArgs.joinToString(" "))
-        val id = nextId()
-        val eventName = "traceroute" + id
-        var resp = TracerouteResponse(eventName, reactContext)
         Thread {
-            nativeTraceroute(cliArgs, resp)
+            nativeTraceroute(cliArgs, TracerouteResponse(reactContext))
         }.start()
-        promise.resolve(eventName)
+        promise.resolve(null)
     }
-
-    @Synchronized
-    fun nextId(): Int {
-        return id++
-    }
-
 
     external fun nativeTraceroute(args: Array<String>, resp: TracerouteResponse): Int
 
@@ -73,7 +76,9 @@ class TracerouteModule(val reactContext: ReactApplicationContext) : ReactContext
     {
 
         val TAG = "TracerouteModule"
-        var id = 1
+        val updateEvent = "tracerouteUpdateEvent"
+        val inProgress: AtomicBoolean = AtomicBoolean(false)
+
 
         // Used to load the 'native-lib' library on application startup.
         init

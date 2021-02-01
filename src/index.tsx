@@ -1,27 +1,42 @@
 import { NativeEventEmitter, NativeModules } from 'react-native';
 
 export interface TracerouteResult {
-  stdout: string;
-  stderr: string;
-  exitcode?: number;
+  output: string;
+  done: boolean;
 }
 
-const TracerouteEventEmitter = new NativeEventEmitter(NativeModules.TracerouteModule);
+const TracerouteUpdateEvent = "tracerouteUpdateEvent";
 
-export function Traceroute(
+const TracerouteModule = NativeModules.TracerouteModule;
+
+const TracerouteEventEmitter = TracerouteModule
+  ? new NativeEventEmitter(TracerouteModule)
+  : undefined;
+
+let tracerouteInProgress: boolean = false;
+
+export async function Traceroute(
   address: string,
   probeType: "udp" | "icmp",
   onUpdate: (result: TracerouteResult) => void
-) {
-  NativeModules.TracerouteModule.doTraceroute(address, probeType).then((id: string) => {
-    const listener = (evt: TracerouteResult) => {
-      onUpdate(evt);
-      if (evt.exitcode !== undefined) {
-        TracerouteEventEmitter.removeListener(id, listener);
-      }
-    };
-    TracerouteEventEmitter.addListener(id, listener);
-  });
+): Promise<void> {
+  if (!TracerouteModule) {
+    throw new Error("No traceroute module.");
+  }
+  if (tracerouteInProgress) {
+    console.error("rejecting, in progress");
+    throw new Error("Traceroute in progress.");
+  }
+  tracerouteInProgress = true;
+  const listener = (evt: TracerouteResult) => {
+    onUpdate(evt);
+    if (evt.done) {
+      tracerouteInProgress = false;
+      TracerouteEventEmitter.removeListener(TracerouteUpdateEvent, listener);
+    }
+  };
+  TracerouteEventEmitter.addListener(TracerouteUpdateEvent, listener);
+  await TracerouteModule.doTraceroute(address, probeType)
 }
 
 export default Traceroute;

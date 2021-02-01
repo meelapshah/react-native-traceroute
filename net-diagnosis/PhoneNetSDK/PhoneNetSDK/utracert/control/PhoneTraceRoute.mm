@@ -35,7 +35,7 @@ typedef enum PNetRecTracertIcmpType{
 - (instancetype)init
 {
     if ([super init]) {
-        _isStopTracert = NO;
+        _isStopTracert = YES;
         _lastRecTracertIcmpType = PNetRecTracertIcmpType_None;
     }
     return self;
@@ -85,7 +85,7 @@ typedef enum PNetRecTracertIcmpType{
     }else{
        log4cplus_warn("PhoneNetTracert", "access %s DNS error , remove this ip..\n",[host UTF8String]);
     }
-    
+
     if (_host == NULL) {
         return NO;
     }
@@ -99,7 +99,7 @@ typedef enum PNetRecTracertIcmpType{
          log4cplus_warn("PhoneNetTracert", "there is no valid domain in the domain list , traceroute complete..\n");
         return;
     }
-    
+    self.isStopTracert = NO;
     [PNetQueue pnet_trace_async:^{
         [self settingUHostSocketAddressWithHost:self.host];
         [self startTracert:self->socket_client andRemoteAddr:self->remote_addr];

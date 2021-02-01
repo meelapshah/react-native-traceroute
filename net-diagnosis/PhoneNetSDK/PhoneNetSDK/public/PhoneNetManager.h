@@ -35,7 +35,7 @@
 /*！
  @description
  ping function
- 
+
  @param host ip address or domain name
  @param count   send ping packet count
  @param handler ping detail information
@@ -62,11 +62,11 @@
 #pragma mark - About traceroute
 /*!
  @description
- 
+
  @param host ip address or domain name
  @param handler traceroute detail information
  */
-- (void)netStartTraceroute:(NSString *_Nonnull)host tracerouteResultHandler:(NetTracerouteResultHandler _Nonnull)handler;
+- (void)netStartTraceroute:(NSString *_Nonnull)host tracerouteResultHandler:(NetTracerouteResultHandler _Nonnull)handler tracerouteCompleteHandler:(NetTracerouteCompleteHandler _Nonnull)completeHandler;
 
 
 /*!
@@ -79,7 +79,7 @@
 /*!
  @description
  get the traceroute status
- 
+
  @return YES: now is doing traceroute;  NO: not doing traceroute at the moment
  */
 - (BOOL)isDoingTraceroute;
