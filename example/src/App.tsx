@@ -12,13 +12,8 @@ export default function App() {
 
   React.useEffect(() => {
     Traceroute(
-    [
-    'traceroute',
-    '-4',
-    /* '--udp',
-    * '--port=50000', */
     '8.8.8.8',
-    ],
+    'icmp',
     (evt: TracerouteResult) => {
     setStdout(evt.stdout);
     setStderr(evt.stderr);

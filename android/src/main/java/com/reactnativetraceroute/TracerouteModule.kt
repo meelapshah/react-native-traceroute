@@ -42,18 +42,21 @@ class TracerouteResponse(val eventName: String, val reactContext: ReactApplicati
 
 class TracerouteModule(val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
     override fun getName(): String {
-        return "Traceroute"
+        return "TracerouteModule"
     }
 
     @ReactMethod
-    fun doTraceroute(args: ReadableArray, promise: Promise) {
-        var strargs = Array<String?>(args.size()) { i  -> args.getString(i) }
-        Log.d(TracerouteModule.TAG, "doTraceroute " + strargs.joinToString(" "))
+    fun doTraceroute(address: String, probeType: String, promise: Promise) {
+        val cliArgs = arrayOf<String>("traceroute", "-I", address)
+        if (probeType == "udp") {
+          cliArgs[1] = "-U"
+        }
+        Log.d(TracerouteModule.TAG, "doTraceroute " + cliArgs.joinToString(" "))
         val id = nextId()
         val eventName = "traceroute" + id
         var resp = TracerouteResponse(eventName, reactContext)
         Thread {
-            nativeTraceroute(strargs, resp)
+            nativeTraceroute(cliArgs, resp)
         }.start()
         promise.resolve(eventName)
     }
@@ -63,8 +66,8 @@ class TracerouteModule(val reactContext: ReactApplicationContext) : ReactContext
         return id++
     }
 
-    
-    external fun nativeTraceroute(args: Array<String?>, resp: TracerouteResponse): Int
+
+    external fun nativeTraceroute(args: Array<String>, resp: TracerouteResponse): Int
 
     companion object
     {
@@ -78,5 +81,5 @@ class TracerouteModule(val reactContext: ReactApplicationContext) : ReactContext
             System.loadLibrary("traceroute")
         }
     }
-    
+
 }

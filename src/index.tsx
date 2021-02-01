@@ -6,13 +6,14 @@ export interface TracerouteResult {
   exitcode?: number;
 }
 
-const TracerouteEventEmitter = new NativeEventEmitter(NativeModules.Traceroute);
+const TracerouteEventEmitter = new NativeEventEmitter(NativeModules.TracerouteModule);
 
 export function Traceroute(
-  cliArgs: string[],
+  address: string,
+  probeType: "udp" | "icmp",
   onUpdate: (result: TracerouteResult) => void
 ) {
-  NativeModules.Traceroute.doTraceroute(cliArgs).then((id: string) => {
+  NativeModules.TracerouteModule.doTraceroute(address, probeType).then((id: string) => {
     const listener = (evt: TracerouteResult) => {
       onUpdate(evt);
       if (evt.exitcode !== undefined) {
