@@ -1,7 +1,6 @@
 export interface TracerouteResult {
-    stdout: string;
-    stderr: string;
-    exitcode?: number;
+    output: string;
+    done: boolean;
 }
-export declare function Traceroute(address: string, probeType: "udp" | "icmp", onUpdate: (result: TracerouteResult) => void): void;
+export declare function Traceroute(address: string, probeType: "udp" | "icmp", onUpdate: (result: TracerouteResult) => void): Promise<void>;
 export default Traceroute;
